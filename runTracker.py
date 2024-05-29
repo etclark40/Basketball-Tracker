@@ -1,4 +1,14 @@
-# combination of detectNet and actionNet
+''' Name: Elliot Clark
+    Date: May 29, 2024
+  
+    File Description:
+    	This code applies a pre-trained mobilenet architecture to a video output, overlaying bounding boxes
+    	for detected classes. For this model, I applied transfer learning to better detect a basketball and
+    	a basketball hoop. In addition to overlaying the bounding boxes of detected objects, we also import
+    	an OpenCV module to overlay a shot counter. A made shot is justified through a comparison of the 
+    	dimensions of both the detected basketball and the hoop, and a cooldown timer was added to ensure
+    	each make was counted once.   
+'''
 
 #!/usr/bin/env python3
 #
