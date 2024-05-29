@@ -25,8 +25,10 @@
 
 import sys
 import argparse
-
+import cv2
+import jetson_inference
 from jetson_inference import detectNet
+import jetson_utils
 from jetson_utils import videoSource, videoOutput, Log
 
 # parse the command line
@@ -54,11 +56,13 @@ output = videoOutput(args.output, argv=sys.argv)
 # load the object detection network
 net = detectNet(args.network, sys.argv, args.threshold)
 
-# note: to hard-code the paths to load a model, the following API can be used:
-#
-# net = detectNet(model="model/ssd-mobilenet.onnx", labels="model/labels.txt", 
-#                 input_blob="input_0", output_cvg="scores", output_bbox="boxes", 
-#                 threshold=args.threshold)
+shotAttempts = 0 # shot attempt counter
+cooldown = 0 # cooldown timer between shots
+
+# detects bounding box intersection between ball and hoop
+def intersects(rect1, rect2):
+	return not (rect1[2] < rect2[0] or rect1[0] > rect2[2] or rect1[3] < rect2[1] or rect1[1] > rect2[3])
+
 
 # process frames until EOS or the user exits
 while True:
@@ -70,14 +74,36 @@ while True:
         
     # detect objects in the image (with overlay)
     detections = net.Detect(img, overlay=args.overlay)
-
-    # print the detections
-    print("detected {:d} objects in image".format(len(detections)))
-
+    
+    basketballBbox = None
+    rimBbox = None
     for detection in detections:
-        print(detection)
+        if detection.ClassID == 1: # basketball
+        	basketballBbox = detection
+        elif detection.ClassID == 2: # hoop
+        	rimBbox = detection
+        	
+    # check cooldown and intersection
+    if basketballBbox and rimBbox and cooldown == 0:
+    	basketballRect = (basketballBbox.Left, basketballBbox.Top, basketballBbox.Right, basketballBbox.Bottom)
+    	rimRect = (rimBbox.Left, rimBbox.Top, rimBbox.Right, rimBbox.Bottom)
+    	
+    	if intersects(basketballRect, rimRect):
+    		shotAttempts += 1
+    		cooldown = 150
+    
+    if cooldown > 0:
+    	cooldown -= 1
+    
+    # convert image to numpy
+    img = jetson_utils.cudaToNumpy(img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGBA2BGR)
+    
+    # overlay shot counter
+    cv2.putText(img, f'Shot Counter: {shotAttempts}', (1000,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA) 
 
     # render the image
+    img = jetson_utils.cudaFromNumpy(img)
     output.Render(img)
 
     # update the title bar

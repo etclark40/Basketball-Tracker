@@ -1,6 +1,3 @@
-<<<<<<< HEAD
 BACKGROUND
-=======
->>>>>>> 6e36ed4f8621a92569b972f87d71d5c932c2d3b6
 basketball
 hoop
