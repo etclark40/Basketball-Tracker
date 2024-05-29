@@ -1,7 +1,7 @@
-# Basketball-Tracker
-Basketball Tracking Computer Vision Framework - Jetson Orin Nano
+# Basketball Shot Detector
+Developed on the Jetson Orin Nano using NVIDIA Jetpack 5.1.3   
 
-Ran on the Jetson Orin Nano developer kit using NVIDIA Jetpack 5.1.3 
+![Basketball Orin Nano Demo](https://github.com/etclark40/Basketball-Tracker/assets/131305180/71048368-2382-42e6-bfe8-9ef6f4ae37ea)
 
 # How To Run
 First clone the repository.
