@@ -10,7 +10,7 @@ This project adapts a pre-trained CNN to better detect basketballs while playing
 The tracking file implements frame-by-frame bounding box comparisons between the basketball and the hoop, and updates a shot counter accordingly. It also overlays this counter to the video output using OpenCV.
 
 # How To Run
-To clone the repository:
+Clone the repository:
 ```sh
 git clone https://github.com/etclark40/Basketball-Tracker.git  
 ```
